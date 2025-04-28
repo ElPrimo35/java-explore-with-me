@@ -23,7 +23,6 @@ public class ServiceStats implements ServiceStatsInt {
         Hit hit1 = statsMapper.toHit(hit);
         return statsMapper.toDto(statsRepository.save(hit1));
     }
-
     @Override
     public List<ViewStats> getStats(String start, String end, List<String> uris, boolean unique) {
         LocalDateTime startDate = LocalDateTime.parse(start, FORMATTER);
