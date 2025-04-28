@@ -21,11 +21,12 @@ public class StatsMapper {
     }
 
     public EndpointHit toDto(Hit hit) {
-        return new EndpointHit(hit.getId(),
-                hit.getApp(),
-                hit.getIp(),
-                hit.getUri(),
-                String.valueOf(hit.getTimestamp())
-        );
+        EndpointHit endpointHit = new EndpointHit();
+        endpointHit.setId(hit.getId());
+        endpointHit.setApp(hit.getApp());
+        endpointHit.setIp(hit.getIp());
+        endpointHit.setUri(hit.getUri());
+        endpointHit.setTimestamp(String.valueOf(hit.getTimestamp()));
+        return endpointHit;
     }
 }
