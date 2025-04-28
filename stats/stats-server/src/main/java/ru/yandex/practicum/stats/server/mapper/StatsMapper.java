@@ -1,0 +1,31 @@
+package ru.yandex.practicum.stats.server.mapper;
+
+import org.springframework.stereotype.Component;
+import ru.yandex.practicum.stats.dto.EndpointHit;
+import ru.yandex.practicum.stats.server.model.Hit;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+@Component
+public class StatsMapper {
+    private final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    public Hit toHit(EndpointHit hitDto) {
+        Hit hit = new Hit();
+        hit.setApp(hitDto.getApp());
+        hit.setIp(hitDto.getIp());
+        hit.setUri(hitDto.getUri());
+        hit.setTimestamp(LocalDateTime.parse(hitDto.getTimestamp(), FORMATTER));
+        return hit;
+    }
+
+    public EndpointHit toDto(Hit hit) {
+        return new EndpointHit(hit.getId(),
+                hit.getApp(),
+                hit.getIp(),
+                hit.getUri(),
+                String.valueOf(hit.getTimestamp())
+        );
+    }
+}
