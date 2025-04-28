@@ -1,6 +1,5 @@
 package ru.yandex.practicum.stats.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
