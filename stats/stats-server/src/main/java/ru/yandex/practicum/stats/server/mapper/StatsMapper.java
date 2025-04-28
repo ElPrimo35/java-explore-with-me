@@ -9,14 +9,14 @@ import java.time.format.DateTimeFormatter;
 
 @Component
 public class StatsMapper {
-    private final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public Hit toHit(EndpointHit hitDto) {
         Hit hit = new Hit();
         hit.setApp(hitDto.getApp());
         hit.setIp(hitDto.getIp());
         hit.setUri(hitDto.getUri());
-        hit.setTimestamp(LocalDateTime.parse(hitDto.getTimestamp(), FORMATTER));
+        hit.setTimestamp(LocalDateTime.parse(hitDto.getTimestamp(), formatter));
         return hit;
     }
 

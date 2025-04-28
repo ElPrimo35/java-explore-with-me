@@ -14,7 +14,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ServiceStats implements ServiceStatsInt {
-    private final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private final StatsMapper statsMapper;
     private final StatsRepository statsRepository;
 
@@ -26,8 +26,8 @@ public class ServiceStats implements ServiceStatsInt {
 
     @Override
     public List<ViewStats> getStats(String start, String end, List<String> uris, boolean unique) {
-        LocalDateTime startDate = LocalDateTime.parse(start, FORMATTER);
-        LocalDateTime endDate = LocalDateTime.parse(end, FORMATTER);
+        LocalDateTime startDate = LocalDateTime.parse(start, formatter);
+        LocalDateTime endDate = LocalDateTime.parse(end, formatter);
         if (unique) {
             return statsRepository.getStatsUnique(startDate, endDate, uris);
         }

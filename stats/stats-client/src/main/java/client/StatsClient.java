@@ -18,7 +18,7 @@ import java.util.Optional;
 @Service
 public class StatsClient {
     private final RestClient restClient;
-    private final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     @Value("${server.base.url}")
     private final String serverUrl;
 
@@ -58,6 +58,6 @@ public class StatsClient {
     }
 
     private String encodeDateTime(LocalDateTime dateTime) {
-        return dateTime.format(FORMATTER);
+        return dateTime.format(formatter);
     }
 }
