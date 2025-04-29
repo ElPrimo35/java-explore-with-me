@@ -1,5 +1,6 @@
 package ru.yandex.practicum.stats.server.stats;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.yandex.practicum.stats.dto.ViewStats;
@@ -14,7 +15,8 @@ public interface StatsRepository extends JpaRepository<Hit, Integer> {
             "from Hit h " +
             "where h.timestamp BETWEEN ?1 AND ?2 " +
             "AND (?3 IS NULL OR h.uri IN ?3) " +
-            "GROUP BY h.app, h.uri")
+            "GROUP BY h.app, h.uri " +
+            "ORDER BY COUNT(h.ip) DESC")
     List<ViewStats> getStats(LocalDateTime start, LocalDateTime end, List<String> uris);
 
 
@@ -22,7 +24,8 @@ public interface StatsRepository extends JpaRepository<Hit, Integer> {
             "from Hit h " +
             "where h.timestamp BETWEEN ?1 AND ?2 " +
             "AND (?3 IS NULL OR h.uri IN ?3) " +
-            "GROUP BY h.app, h.uri")
+            "GROUP BY h.app, h.uri " +
+            "ORDER BY COUNT(h.ip) DESC")
     List<ViewStats> getStatsUnique(LocalDateTime start, LocalDateTime end, List<String> uris);
 
 }

@@ -18,7 +18,7 @@ public class ControllerStats {
         return serviceStatsInt.saveHit(hit);
     }
 
-    @GetMapping("/ru/yandex/practicum/stats/server/stats")
+    @GetMapping("/stats")
     public List<ViewStats> getStats(
             @RequestParam String start,
             @RequestParam String end,
