@@ -10,5 +10,5 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
 
     @Query("SELECT c FROM Category c " +
             "WHERE (?1 IS NULL OR c.name IN ?1)")
-    Category findCategoryByName(String Name);
+    Category findCategoryByName(String name);
 }

@@ -96,8 +96,8 @@ public class CompilationService implements CompilationServiceInt {
         return compilations.stream()
                 .map(compilation -> compilationMapper.toCompilationDto(
                         compilation,
-                        compilationRepository.findEventsByCompId(compilation.getId()).stream().
-                                map(event -> eventMapper.toShortDto(event,
+                        compilationRepository.findEventsByCompId(compilation.getId()).stream()
+                                .map(event -> eventMapper.toShortDto(event,
                                         categoryMapper.toDto(event.getCategory()),
                                         userMapper.toShortDto(event.getInitiator())))
                                 .toList()
@@ -110,8 +110,8 @@ public class CompilationService implements CompilationServiceInt {
         Compilation compilation = compilationRepository.findById(compId).orElseThrow(() -> new NotFoundException("Compilation not found"));
         return compilationMapper.toCompilationDto(
                 compilation,
-                compilationRepository.findEventsByCompId(compilation.getId()).stream().
-                        map(event -> eventMapper.toShortDto(event,
+                compilationRepository.findEventsByCompId(compilation.getId()).stream()
+                        .map(event -> eventMapper.toShortDto(event,
                                 categoryMapper.toDto(event.getCategory()),
                                 userMapper.toShortDto(event.getInitiator())))
                         .toList()
