@@ -35,16 +35,17 @@ public class CompilationService implements CompilationServiceInt {
     @Override
     @Transactional
     public CompilationDto createComp(CompilationRequestDto requestDto) {
-        List<Event> events = eventRepository.findEventsByIds(requestDto.getEvents());
+        List<Event> eventList = eventRepository.findEventsByIds(requestDto.getEvents());
         Compilation compilation = compilationMapper.toEntity(requestDto);
         Compilation savedCompilation = compilationRepository.save(compilation);
-        events.forEach(event -> {
+        eventList.forEach(event -> {
             compilationRepository.insertCompilationEvent(
                     savedCompilation.getId(),
                     event.getId()
             );
         });
-        List<EventShortDto> eventShortDtos = events.stream()
+
+        List<EventShortDto> eventShortDtos = eventList.stream()
                 .map(event -> eventMapper.toShortDto(event,
                         categoryMapper.toDto(event.getCategory()),
                         userMapper.toShortDto(event.getInitiator())))
