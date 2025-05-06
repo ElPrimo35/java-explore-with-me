@@ -26,7 +26,7 @@ public class StatsMapper {
         endpointHit.setApp(hit.getApp());
         endpointHit.setIp(hit.getIp());
         endpointHit.setUri(hit.getUri());
-        endpointHit.setTimestamp(String.valueOf(hit.getTimestamp()));
+        endpointHit.setTimestamp(hit.getTimestamp().format(formatter));
         return endpointHit;
     }
 }

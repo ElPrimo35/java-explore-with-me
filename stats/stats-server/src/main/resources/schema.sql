@@ -1,3 +1,5 @@
+drop table if exists hits cascade;
+
 CREATE TABLE IF NOT EXISTS hits (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     app VARCHAR(255) NOT NULL,
