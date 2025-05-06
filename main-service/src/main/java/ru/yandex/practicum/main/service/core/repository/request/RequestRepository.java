@@ -17,11 +17,6 @@ public interface RequestRepository extends JpaRepository<Request, Integer> {
 
 
     @Query("SELECT r FROM Request r " +
-            "WHERE r.status = ?1")
-    List<Request> getRequestsByStatus(Status status);
-
-
-    @Query("SELECT r FROM Request r " +
             "WHERE r.event.id = ?2 " +
             "AND r.event.initiator.id = ?1")
     List<Request> getRequestsUsersEvent(Integer userId, Integer eventId);

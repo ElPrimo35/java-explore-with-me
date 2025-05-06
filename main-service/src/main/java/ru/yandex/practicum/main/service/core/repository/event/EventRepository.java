@@ -14,8 +14,6 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
             "WHERE (?1 IS NULL OR e.id IN ?1)")
     List<Event> findEventsByIds(List<Integer> eventIds);
 
-    Boolean existsByState(String state);
-
     @Query("SELECT e FROM Event e WHERE e.category.name = :categoryName")
     List<Event> findByCategoryName(@Param("categoryName") String categoryName);
 

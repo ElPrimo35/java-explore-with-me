@@ -1,7 +1,6 @@
 package ru.yandex.practicum.main.service.core.repository.compilation;
 
 import jakarta.transaction.Transactional;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -30,15 +29,4 @@ public interface CompilationRepository extends JpaRepository<Compilation, Intege
             "DELETE FROM compilation_events WHERE compilation_id = ?1;",
             nativeQuery = true)
     void deleteCompilationEvents(Integer compId);
-
-
-    @Query("SELECT c FROM Compilation c " +
-            "WHERE c.pinned = ?1")
-    List<Compilation> getCompilationsByPinned(Boolean pinned, Pageable pageable);
-
-
-    @Query("SELECT c FROM Compilation c " +
-            "")
-    List<Compilation> getAllCompilations(Pageable pageable);
-
 }

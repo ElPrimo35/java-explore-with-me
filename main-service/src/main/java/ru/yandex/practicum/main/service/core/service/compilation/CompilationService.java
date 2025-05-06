@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.main.service.core.repository.category.CategoryRepository;
 import ru.yandex.practicum.main.service.core.repository.compilation.CompilationRepository;
 import ru.yandex.practicum.main.service.core.repository.event.EventRepository;
 import ru.yandex.practicum.main.service.dto.CompilationDto;
@@ -29,7 +28,6 @@ public class CompilationService implements CompilationServiceInt {
     private final CompilationRepository compilationRepository;
     private final EventRepository eventRepository;
     private final CompilationMapper compilationMapper;
-    private final CategoryRepository categoryRepository;
     private final EventMapper eventMapper;
     private final CategoryMapper categoryMapper;
     private final UserMapper userMapper;
