@@ -31,7 +31,8 @@ public interface EventServiceInt {
                                   Boolean onlyAvailable,
                                   String sort,
                                   Integer from,
-                                  Integer size);
+                                  Integer size,
+                                  HttpServletRequest request);
 
     EventFullDto getEvent(Integer eventId, HttpServletRequest request);
 }

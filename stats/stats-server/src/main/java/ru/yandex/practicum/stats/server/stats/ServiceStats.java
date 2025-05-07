@@ -1,7 +1,11 @@
 package ru.yandex.practicum.stats.server.stats;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.stats.dto.EndpointHit;
 import ru.yandex.practicum.stats.dto.ViewStats;
 import ru.yandex.practicum.stats.server.mapper.StatsMapper;
@@ -26,8 +30,14 @@ public class ServiceStats implements ServiceStatsInt {
 
     @Override
     public List<ViewStats> getStats(String start, String end, List<String> uris, boolean unique) {
+        if (end == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST ,"EndDate cannot be null");
+        }
         LocalDateTime startDate = LocalDateTime.parse(start, formatter);
         LocalDateTime endDate = LocalDateTime.parse(end, formatter);
+        if (startDate.isAfter(endDate)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST ,"Start must be before end");
+        }
         if (unique) {
             return statsRepository.getStatsUnique(startDate, endDate, uris);
         }

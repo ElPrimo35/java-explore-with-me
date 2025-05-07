@@ -1,6 +1,7 @@
 package ru.yandex.practicum.stats.server.stats;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.stats.dto.EndpointHit;
 import ru.yandex.practicum.stats.dto.ViewStats;
@@ -14,6 +15,7 @@ public class ControllerStats {
     private final ServiceStatsInt serviceStatsInt;
 
     @PostMapping("/hit")
+    @ResponseStatus(HttpStatus.CREATED)
     public EndpointHit saveHit(@RequestBody EndpointHit hit) {
         return serviceStatsInt.saveHit(hit);
     }

@@ -285,7 +285,9 @@ public class EventService implements EventServiceInt {
                                          Boolean onlyAvailable,
                                          String sort,
                                          Integer from,
-                                         Integer size) {
+                                         Integer size,
+                                         HttpServletRequest request) {
+        sendHitStats(request);
         LocalDateTime parsedStart = rangeStart != null ?
                 LocalDateTime.parse(rangeStart, formatter) : null;
         LocalDateTime parsedEnd = rangeEnd != null ?
