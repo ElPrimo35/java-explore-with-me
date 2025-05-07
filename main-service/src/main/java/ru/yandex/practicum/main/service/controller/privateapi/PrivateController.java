@@ -41,16 +41,18 @@ public class PrivateController {
 
     @GetMapping("/events/{eventId}")
     public EventFullDto getUserEvent(@PathVariable Integer userId,
-                                     @PathVariable Integer eventId) {
-        return eventService.getUserEvent(userId, eventId);
+                                     @PathVariable Integer eventId,
+                                     HttpServletRequest request) {
+        return eventService.getUserEvent(userId, eventId, request);
     }
 
 
     @PatchMapping("/events/{eventId}")
     public EventFullDto updateUserEvent(@PathVariable Integer userId,
                                         @PathVariable Integer eventId,
-                                        @RequestBody @Valid UpdateEventAdminRequest updateEventAdminRequest) {
-        return eventService.updateUserEvent(userId, eventId, updateEventAdminRequest);
+                                        @RequestBody @Valid UpdateEventAdminRequest updateEventAdminRequest,
+                                        HttpServletRequest request) {
+        return eventService.updateUserEvent(userId, eventId, updateEventAdminRequest, request);
     }
 
     @GetMapping("/events/{eventId}/requests")

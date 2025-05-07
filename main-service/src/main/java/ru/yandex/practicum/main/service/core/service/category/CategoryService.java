@@ -50,11 +50,6 @@ public class CategoryService implements CategoryServiceInt {
         categoryRepository.findById(categoryId).orElseThrow(() -> new NotFoundException("Category not found"));
         Category category = categoryMapper.toCategory(categoryDto);
         category.setId(categoryId);
-        Category category1 = categoryRepository.findCategoryByName(categoryDto.getName());
-        if (category1 != null && !Objects.equals(category1.getId(), categoryId)) {
-            throw new ConflictException("Category name is already exists");
-        }
-
         return categoryMapper.toDto(categoryRepository.save(category));
     }
 

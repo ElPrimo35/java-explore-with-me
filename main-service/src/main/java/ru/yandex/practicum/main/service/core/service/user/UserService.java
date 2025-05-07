@@ -18,25 +18,8 @@ public class UserService implements UserServiceInt {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-    private boolean isValidEmail(String email) {
-        String[] parts = email.split("@");
-        String localPart = parts[0];
-        if (localPart.length() > 64) return false;
-
-        String domain = parts[1];
-        String[] domainParts = domain.split("\\.");
-        for (String part : domainParts) {
-            if (part.length() > 63) return false;
-        }
-        return true;
-    }
-
-
     @Override
     public UserDto createUser(UserDto userDto) {
-        if (!isValidEmail(userDto.getEmail())) {
-            throw new BadRequestException("Email is invalid");
-        }
         if (userRepository.existsByEmail(userDto.getEmail())) {
             throw new ConflictException("This email is already in use");
         }

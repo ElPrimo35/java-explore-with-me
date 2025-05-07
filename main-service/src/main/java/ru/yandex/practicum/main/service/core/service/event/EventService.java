@@ -53,47 +53,28 @@ public class EventService implements EventServiceInt {
 
     @Override
     public EventFullDto createEvent(EventRequestDto eventRequestDto, Integer userId, HttpServletRequest request) {
-        Long views;
         Category category;
-        Integer categoryId = eventRequestDto.getCategory();
         LocalDateTime createdOn = LocalDateTime.now();
         LocalDateTime eventDade = LocalDateTime.parse(eventRequestDto.getEventDate(), formatter);
         if (eventDade.isBefore(createdOn.plusHours(2))) {
             throw new BadRequestException("Field: eventDate. Error: должно содержать дату, которая еще не наступила.");
         }
-        if (eventRequestDto.getDescription().length() < 20 || eventRequestDto.getAnnotation().length() < 20) {
-            throw new BadRequestException("Description must be longer");
-        }
-        if (categoryId != null) {
-            category = categoryRepository.findById(eventRequestDto.getCategory())
-                    .orElseThrow(() -> new NotFoundException("Category not found"));
-        } else {
-            category = null;
-        }
+        category = categoryRepository.findById(eventRequestDto.getCategory())
+                .orElseThrow(() -> new NotFoundException("Category not found"));
+
 
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
-
-        List<ViewStats> viewStats = statsClient.getStats(createdOn,
-                LocalDateTime.now(),
-                List.of(request.getRequestURI()), false);
-        if (!viewStats.isEmpty()) {
-            views = viewStats.getFirst().getHits();
-        } else {
-            views = 0L;
-        }
-        Event event = eventMapper.toEntity(eventRequestDto, category, user, views, 0, createdOn);
-        Event eventWithId = eventRepository.save(event);
-        Integer confirmedRequest = requestRepository.getRequestsCountByStatus(eventWithId.getId(), Status.CONFIRMED);
-        eventWithId.setConfirmedRequests(confirmedRequest);
-        Event savedEvent = eventRepository.save(eventWithId);
+        Event event = eventMapper.toEntity(eventRequestDto, category, user, 0, createdOn);
+        Event savedEvent = eventRepository.save(event);
         return eventMapper.toFullDto(savedEvent, categoryMapper.toDto(savedEvent.getCategory()),
                 userMapper.toShortDto(savedEvent.getInitiator()),
-                new Location(savedEvent.getLocationLat(), savedEvent.getLocationLon()));
+                new Location(savedEvent.getLocationLat(), savedEvent.getLocationLon()),
+                0L);
     }
 
     @Override
     public List<EventFullDto> getAllEvents(List<Integer> users, List<String> states, List<Integer> categories,
-                                           String rangeStart, String rangeEnd, Integer from, Integer size) {
+                                           String rangeStart, String rangeEnd, Integer from, Integer size, HttpServletRequest request) {
         LocalDateTime start = rangeStart != null ? LocalDateTime.parse(rangeStart, formatter) : null;
         LocalDateTime end = rangeEnd != null ? LocalDateTime.parse(rangeEnd, formatter) : null;
 
@@ -129,13 +110,14 @@ public class EventService implements EventServiceInt {
                         event1,
                         categoryMapper.toDto(event1.getCategory()),
                         userMapper.toShortDto(event1.getInitiator()),
-                        new Location(event1.getLocationLat(), event1.getLocationLon())
+                        new Location(event1.getLocationLat(), event1.getLocationLon()),
+                        getViewStats(event1, request.getRequestURI())
                 ))
                 .toList();
     }
 
     @Override
-    public EventFullDto updateEvent(UpdateEventAdminRequest updateEventAdminRequest, Integer eventId) {
+    public EventFullDto updateEvent(UpdateEventAdminRequest updateEventAdminRequest, Integer eventId, HttpServletRequest request) {
         Integer categoryId = updateEventAdminRequest.getCategory();
         Category category;
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Event not found"));
@@ -164,7 +146,8 @@ public class EventService implements EventServiceInt {
         return eventMapper.toFullDto(savedEvent,
                 categoryMapper.toDto(savedEvent.getCategory()),
                 userMapper.toShortDto(savedEvent.getInitiator()),
-                new Location(savedEvent.getLocationLat(), savedEvent.getLocationLon()));
+                new Location(savedEvent.getLocationLat(), savedEvent.getLocationLon()),
+                getViewStats(savedEvent, request.getRequestURI()));
     }
 
     @Override
@@ -176,14 +159,15 @@ public class EventService implements EventServiceInt {
                         event,
                         categoryMapper.toDto(event.getCategory()),
                         userMapper.toShortDto(event.getInitiator()),
-                        new Location(event.getLocationLat(), event.getLocationLon())))
+                        new Location(event.getLocationLat(), event.getLocationLon()),
+                        getViewStats(event, request.getRequestURI())))
                 .toList();
 
     }
 
 
     @Override
-    public EventFullDto getUserEvent(Integer userId, Integer eventId) {
+    public EventFullDto getUserEvent(Integer userId, Integer eventId, HttpServletRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Event not found"));
         Event userEvent = eventRepository.getUserEvent(userId, eventId);
@@ -194,7 +178,8 @@ public class EventService implements EventServiceInt {
                 userEvent,
                 categoryMapper.toDto(userEvent.getCategory()),
                 userMapper.toShortDto(userEvent.getInitiator()),
-                new Location(event.getLocationLat(), event.getLocationLon()));
+                new Location(event.getLocationLat(), event.getLocationLon()),
+                getViewStats(userEvent, request.getRequestURI()));
     }
 
 
@@ -252,7 +237,7 @@ public class EventService implements EventServiceInt {
     }
 
     @Override
-    public EventFullDto updateUserEvent(Integer userId, Integer eventId, UpdateEventAdminRequest updateEventAdminRequest) {
+    public EventFullDto updateUserEvent(Integer userId, Integer eventId, UpdateEventAdminRequest updateEventAdminRequest, HttpServletRequest request) {
         Integer categoryId = updateEventAdminRequest.getCategory();
         Category category;
         Event event = eventRepository.getUserEvent(userId, eventId);
@@ -272,7 +257,8 @@ public class EventService implements EventServiceInt {
         return eventMapper.toFullDto(updatedEvent,
                 categoryMapper.toDto(updatedEvent.getCategory()),
                 userMapper.toShortDto(updatedEvent.getInitiator()),
-                new Location(updatedEvent.getLocationLat(), updatedEvent.getLocationLon()));
+                new Location(updatedEvent.getLocationLat(), updatedEvent.getLocationLon()),
+                getViewStats(updatedEvent, request.getRequestURI()));
     }
 
 
@@ -343,11 +329,11 @@ public class EventService implements EventServiceInt {
                 .map(event1 -> eventMapper.toShortDto(
                         event1,
                         categoryMapper.toDto(event1.getCategory()),
-                        userMapper.toShortDto(event1.getInitiator())
+                        userMapper.toShortDto(event1.getInitiator()),
+                        getViewStats(event1, request.getRequestURI())
                 ))
                 .toList();
     }
-
 
     @Override
     public EventFullDto getEvent(Integer eventId, HttpServletRequest request) {
@@ -357,23 +343,26 @@ public class EventService implements EventServiceInt {
             throw new NotFoundException("There is no published events");
         }
 
-        Long views = 0L;
-
-        List<ViewStats> viewStats = statsClient.getStats(event.getCreatedOn(),
-                LocalDateTime.now(),
-                List.of(request.getRequestURI()), true);
-        if (!viewStats.isEmpty()) {
-            views = viewStats.getFirst().getHits();
-        }
-
-        event.setViews(views);
+        Long views = getViewStats(event, request.getRequestURI());
 
         Integer categoryId = event.getCategory().getId();
         Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new NotFoundException("Category not found"));
         CategoryDto categoryDto = categoryMapper.toDto(category);
         UserShortDto userShortDto = userMapper.toShortDto(event.getInitiator());
         Location location = new Location(event.getLocationLat(), event.getLocationLon());
-        return eventMapper.toFullDto(event, categoryDto, userShortDto, location);
+        return eventMapper.toFullDto(event, categoryDto, userShortDto, location, views);
+    }
+
+    private Long getViewStats(Event event, String uri) {
+        Long views = 0L;
+
+        List<ViewStats> viewStats = statsClient.getStats(event.getCreatedOn(),
+                LocalDateTime.now(),
+                List.of(uri), true);
+        if (!viewStats.isEmpty()) {
+            views = viewStats.getFirst().getHits();
+        }
+        return views;
     }
 
     private void sendHitStats(HttpServletRequest request) {

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.main.service.controller.adminapi;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -60,8 +61,8 @@ public class AdminController {
 
     @PostMapping("/compilations")
     @ResponseStatus(HttpStatus.CREATED)
-    public CompilationDto createComp(@RequestBody @Valid CompilationRequestDto requestDto) {
-        return compilationService.createComp(requestDto);
+    public CompilationDto createComp(@RequestBody @Valid CompilationRequestDto requestDto, HttpServletRequest request) {
+        return compilationService.createComp(requestDto, request);
     }
 
     @GetMapping("/events")
@@ -71,8 +72,8 @@ public class AdminController {
                                            @RequestParam(required = false) String rangeStart,
                                            @RequestParam(required = false) String rangeEnd,
                                            @RequestParam(defaultValue = "0") Integer from,
-                                           @RequestParam(defaultValue = "10") Integer size) {
-        return eventService.getAllEvents(users, states, categories, rangeStart, rangeEnd, from, size);
+                                           @RequestParam(defaultValue = "10") Integer size, HttpServletRequest request) {
+        return eventService.getAllEvents(users, states, categories, rangeStart, rangeEnd, from, size, request);
     }
 
 
@@ -85,13 +86,13 @@ public class AdminController {
 
     @PatchMapping("/compilations/{compId}")
     public CompilationDto updateComp(@RequestBody @Valid CompilationUpdateDto requestDto,
-                                     @PathVariable Integer compId) {
-        return compilationService.updateComp(requestDto, compId);
+                                     @PathVariable Integer compId, HttpServletRequest request) {
+        return compilationService.updateComp(requestDto, compId, request);
     }
 
 
     @PatchMapping("/events/{eventId}")
-    public EventFullDto updateEvent(@RequestBody @Valid UpdateEventAdminRequest updateEventAdminRequest, @PathVariable Integer eventId) {
-        return eventService.updateEvent(updateEventAdminRequest, eventId);
+    public EventFullDto updateEvent(@RequestBody @Valid UpdateEventAdminRequest updateEventAdminRequest, @PathVariable Integer eventId, HttpServletRequest request) {
+        return eventService.updateEvent(updateEventAdminRequest, eventId, request);
     }
 }

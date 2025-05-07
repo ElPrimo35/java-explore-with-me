@@ -37,14 +37,14 @@ public class PublicController {
     @GetMapping("/compilations")
     public List<CompilationDto> getAllCompilations(@RequestParam(required = false) Boolean pinned,
                                                    @RequestParam(defaultValue = "0") Integer from,
-                                                   @RequestParam(defaultValue = "10") Integer size) {
-        return compilationService.getAllCompilations(pinned, from, size);
+                                                   @RequestParam(defaultValue = "10") Integer size, HttpServletRequest request) {
+        return compilationService.getAllCompilations(pinned, from, size, request);
     }
 
 
     @GetMapping("/compilations/{compId}")
-    public CompilationDto getCompById(@PathVariable Integer compId) {
-        return compilationService.getCompById(compId);
+    public CompilationDto getCompById(@PathVariable Integer compId, HttpServletRequest request) {
+        return compilationService.getCompById(compId, request);
     }
 
 

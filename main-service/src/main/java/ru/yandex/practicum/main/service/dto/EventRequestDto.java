@@ -2,18 +2,18 @@ package ru.yandex.practicum.main.service.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NonNull;
 import org.hibernate.validator.constraints.Length;
 
 @Data
 public class EventRequestDto {
-    @NonNull
     @NotBlank
-    @Length(max = 2000)
+    @Size(max = 2000, min = 20)
     private String annotation;
-    private Integer category;
     @NonNull
+    private Integer category;
     @NotBlank
     @Length(max = 7000, min = 20)
     private String description;

@@ -12,7 +12,6 @@ public class CompilationRequestDto {
     private List<Integer> events;
     private Boolean pinned;
     @Length(max = 50)
-    @NonNull
     @NotBlank
     private String title;
 }

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.main.service.core.service.compilation;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,7 +20,10 @@ import ru.yandex.practicum.main.service.mapper.EventMapper;
 import ru.yandex.practicum.main.service.mapper.UserMapper;
 import ru.yandex.practicum.main.service.model.Compilation;
 import ru.yandex.practicum.main.service.model.Event;
+import ru.yandex.practicum.stats.client.StatsClient;
+import ru.yandex.practicum.stats.dto.ViewStats;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -31,10 +35,11 @@ public class CompilationService implements CompilationServiceInt {
     private final EventMapper eventMapper;
     private final CategoryMapper categoryMapper;
     private final UserMapper userMapper;
+    private final StatsClient statsClient;
 
     @Override
     @Transactional
-    public CompilationDto createComp(CompilationRequestDto requestDto) {
+    public CompilationDto createComp(CompilationRequestDto requestDto, HttpServletRequest request) {
         List<Event> eventList = eventRepository.findEventsByIds(requestDto.getEvents());
         Compilation compilation = compilationMapper.toEntity(requestDto);
         Compilation savedCompilation = compilationRepository.save(compilation);
@@ -48,9 +53,22 @@ public class CompilationService implements CompilationServiceInt {
         List<EventShortDto> eventShortDtos = eventList.stream()
                 .map(event -> eventMapper.toShortDto(event,
                         categoryMapper.toDto(event.getCategory()),
-                        userMapper.toShortDto(event.getInitiator())))
+                        userMapper.toShortDto(event.getInitiator()),
+                        getViewStats(event, request.getRequestURI())))
                 .toList();
         return compilationMapper.toCompilationDto(compilation, eventShortDtos);
+    }
+
+    private Long getViewStats(Event event, String uri) {
+        Long views = 0L;
+
+        List<ViewStats> viewStats = statsClient.getStats(event.getCreatedOn(),
+                LocalDateTime.now(),
+                List.of(uri), true);
+        if (!viewStats.isEmpty()) {
+            views = viewStats.getFirst().getHits();
+        }
+        return views;
     }
 
     @Override
@@ -64,7 +82,7 @@ public class CompilationService implements CompilationServiceInt {
 
     @Override
     @Transactional
-    public CompilationDto updateComp(CompilationUpdateDto requestDto, Integer compId) {
+    public CompilationDto updateComp(CompilationUpdateDto requestDto, Integer compId, HttpServletRequest request) {
         Compilation compilation = compilationRepository.findById(compId).orElseThrow(() -> new NotFoundException("Compilation not found"));
         List<Event> events = eventRepository.findEventsByIds(requestDto.getEvents());
         compilationRepository.deleteCompilationEvents(compId);
@@ -78,14 +96,15 @@ public class CompilationService implements CompilationServiceInt {
         List<EventShortDto> eventShortDtos = newEvents.stream()
                 .map(event -> eventMapper.toShortDto(event,
                         categoryMapper.toDto(event.getCategory()),
-                        userMapper.toShortDto(event.getInitiator())))
+                        userMapper.toShortDto(event.getInitiator()),
+                        getViewStats(event, request.getRequestURI())))
                 .toList();
         return compilationMapper.toCompilationDto(compilation, eventShortDtos);
     }
 
 
     @Override
-    public List<CompilationDto> getAllCompilations(Boolean pinned, Integer from, Integer size) {
+    public List<CompilationDto> getAllCompilations(Boolean pinned, Integer from, Integer size, HttpServletRequest request) {
         int pageNumber = from >= 0 ? from : 0;
         int pageSize = size > 0 ? size : 10;
 
@@ -98,21 +117,23 @@ public class CompilationService implements CompilationServiceInt {
                         compilationRepository.findEventsByCompId(compilation.getId()).stream()
                                 .map(event -> eventMapper.toShortDto(event,
                                         categoryMapper.toDto(event.getCategory()),
-                                        userMapper.toShortDto(event.getInitiator())))
+                                        userMapper.toShortDto(event.getInitiator()),
+                                        getViewStats(event, request.getRequestURI())))
                                 .toList()
                 )).toList();
     }
 
 
     @Override
-    public CompilationDto getCompById(Integer compId) {
+    public CompilationDto getCompById(Integer compId, HttpServletRequest request) {
         Compilation compilation = compilationRepository.findById(compId).orElseThrow(() -> new NotFoundException("Compilation not found"));
         return compilationMapper.toCompilationDto(
                 compilation,
                 compilationRepository.findEventsByCompId(compilation.getId()).stream()
                         .map(event -> eventMapper.toShortDto(event,
                                 categoryMapper.toDto(event.getCategory()),
-                                userMapper.toShortDto(event.getInitiator())))
+                                userMapper.toShortDto(event.getInitiator()),
+                                getViewStats(event, request.getRequestURI())))
                         .toList()
         );
     }
