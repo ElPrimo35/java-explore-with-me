@@ -6,7 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.main.service.core.repository.user.UserRepository;
 import ru.yandex.practicum.main.service.dto.UserDto;
-import ru.yandex.practicum.main.service.exception.BadRequestException;
 import ru.yandex.practicum.main.service.exception.ConflictException;
 import ru.yandex.practicum.main.service.mapper.UserMapper;
 

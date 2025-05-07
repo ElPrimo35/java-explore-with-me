@@ -3,7 +3,6 @@ package ru.yandex.practicum.main.service.dto;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import org.hibernate.validator.constraints.Length;
 
 @Data

@@ -16,7 +16,6 @@ import ru.yandex.practicum.main.service.model.Category;
 import ru.yandex.practicum.main.service.model.Event;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @AllArgsConstructor
