@@ -1,7 +1,6 @@
 package ru.yandex.practicum.main.service.core.service.event;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.web.bind.annotation.PathVariable;
 import ru.yandex.practicum.main.service.dto.*;
 
 import java.util.List;

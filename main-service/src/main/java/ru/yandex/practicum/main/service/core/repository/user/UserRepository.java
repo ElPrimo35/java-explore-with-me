@@ -3,7 +3,6 @@ package ru.yandex.practicum.main.service.core.repository.user;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import ru.yandex.practicum.main.service.dto.EventWithLikesFullDto;
 import ru.yandex.practicum.main.service.dto.UserWithDislikesFullDto;
 import ru.yandex.practicum.main.service.dto.UserWithLikesFullDto;
 import ru.yandex.practicum.main.service.model.User;

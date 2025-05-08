@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ru.yandex.practicum.main.service.dto.EventStatsDto;
 import ru.yandex.practicum.main.service.dto.EventWithDislikesFullDto;
-import ru.yandex.practicum.main.service.dto.EventWithDislikesShortDto;
 import ru.yandex.practicum.main.service.dto.EventWithLikesFullDto;
 import ru.yandex.practicum.main.service.model.Event;
 

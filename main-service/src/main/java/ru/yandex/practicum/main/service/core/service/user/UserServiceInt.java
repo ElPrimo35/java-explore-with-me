@@ -1,6 +1,5 @@
 package ru.yandex.practicum.main.service.core.service.user;
 
-import org.springframework.web.bind.annotation.RequestParam;
 import ru.yandex.practicum.main.service.dto.*;
 
 import java.util.List;
@@ -13,6 +12,6 @@ public interface UserServiceInt {
     void deleteUser(Integer userId);
 
     List<UserWithLikesShortDto> getInitiatorsRatingByLikes(SortStrategyLikes sortStrategy);
-    List<UserWithDislikesShortDto> getInitiatorsRatingByDislikes(SortStrategyDislikes sortStrategy);
 
+    List<UserWithDislikesShortDto> getInitiatorsRatingByDislikes(SortStrategyDislikes sortStrategy);
 }
