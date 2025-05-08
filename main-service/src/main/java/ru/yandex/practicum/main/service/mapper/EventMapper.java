@@ -68,4 +68,64 @@ public class EventMapper {
         eventShortDto.setViews(Math.toIntExact(views));
         return eventShortDto;
     }
+
+
+    public EventWithLikesShortDto toShortDtoWithLikes(Event event,
+                                                      CategoryDto category,
+                                                      UserShortDto userShortDto,
+                                                      Long views,
+                                                      Integer likes) {
+        EventWithLikesShortDto eventLikesDto = new EventWithLikesShortDto();
+        eventLikesDto.setAnnotation(event.getAnnotation());
+        eventLikesDto.setCategory(category);
+        eventLikesDto.setConfirmedRequests(event.getConfirmedRequests());
+        eventLikesDto.setEventDate(event.getEventDate().format(formatter));
+        eventLikesDto.setId(event.getId());
+        eventLikesDto.setInitiator(userShortDto);
+        eventLikesDto.setPaid(event.getPaid());
+        eventLikesDto.setTitle(event.getTitle());
+        eventLikesDto.setViews(Math.toIntExact(views));
+        eventLikesDto.setLikes(likes);
+        return eventLikesDto;
+    }
+
+    public EventWithDislikesShortDto toShortDtoWithDislikes(Event event,
+                                                      CategoryDto category,
+                                                      UserShortDto userShortDto,
+                                                      Long views,
+                                                      Integer dislikes) {
+        EventWithDislikesShortDto eventDislikesDto = new EventWithDislikesShortDto();
+        eventDislikesDto.setAnnotation(event.getAnnotation());
+        eventDislikesDto.setCategory(category);
+        eventDislikesDto.setConfirmedRequests(event.getConfirmedRequests());
+        eventDislikesDto.setEventDate(event.getEventDate().format(formatter));
+        eventDislikesDto.setId(event.getId());
+        eventDislikesDto.setInitiator(userShortDto);
+        eventDislikesDto.setPaid(event.getPaid());
+        eventDislikesDto.setTitle(event.getTitle());
+        eventDislikesDto.setViews(Math.toIntExact(views));
+        eventDislikesDto.setDislikes(dislikes);
+        return eventDislikesDto;
+    }
+
+    public EventStatsShortDto toStatsShortDto(Event event,
+                                                CategoryDto category,
+                                                UserShortDto userShortDto,
+                                                Long views,
+                                                Integer dislikes,
+                                                Integer likes) {
+        EventStatsShortDto eventStatsShortDto = new EventStatsShortDto();
+        eventStatsShortDto.setAnnotation(event.getAnnotation());
+        eventStatsShortDto.setCategory(category);
+        eventStatsShortDto.setConfirmedRequests(event.getConfirmedRequests());
+        eventStatsShortDto.setEventDate(event.getEventDate().format(formatter));
+        eventStatsShortDto.setId(event.getId());
+        eventStatsShortDto.setInitiator(userShortDto);
+        eventStatsShortDto.setPaid(event.getPaid());
+        eventStatsShortDto.setTitle(event.getTitle());
+        eventStatsShortDto.setViews(Math.toIntExact(views));
+        eventStatsShortDto.setDislikes(dislikes);
+        eventStatsShortDto.setLikes(likes);
+        return eventStatsShortDto;
+    }
 }

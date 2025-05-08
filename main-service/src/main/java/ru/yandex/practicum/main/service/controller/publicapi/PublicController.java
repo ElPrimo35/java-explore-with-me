@@ -7,10 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.main.service.core.service.category.CategoryServiceInt;
 import ru.yandex.practicum.main.service.core.service.compilation.CompilationServiceInt;
 import ru.yandex.practicum.main.service.core.service.event.EventServiceInt;
-import ru.yandex.practicum.main.service.dto.CategoryDto;
-import ru.yandex.practicum.main.service.dto.CompilationDto;
-import ru.yandex.practicum.main.service.dto.EventFullDto;
-import ru.yandex.practicum.main.service.dto.EventShortDto;
+import ru.yandex.practicum.main.service.core.service.user.UserServiceInt;
+import ru.yandex.practicum.main.service.dto.*;
 
 import java.util.List;
 
@@ -21,6 +19,7 @@ public class PublicController {
     private final CategoryServiceInt categoryService;
     private final CompilationServiceInt compilationService;
     private final EventServiceInt eventService;
+    private final UserServiceInt userService;
 
 
     @GetMapping("/categories")
@@ -66,6 +65,36 @@ public class PublicController {
     public EventFullDto getEvent(@PathVariable Integer id, HttpServletRequest request) {
         return eventService.getEvent(id, request);
     }
+
+    @GetMapping("/events/rating/likes")
+    public List<EventWithLikesShortDto> getEventRatingByLikes(@RequestParam(defaultValue = "SORT_BY_LIKES_DESC") SortStrategyLikes sortStrategy,
+                                                              HttpServletRequest request) {
+        return eventService.getEventRatingByLikes(sortStrategy, request);
+    }
+
+    @GetMapping("/events/rating/dislikes")
+    public List<EventWithDislikesShortDto> getEventRatingByDislikes(@RequestParam(defaultValue = "SORT_BY_DISLIKES_DESC") SortStrategyDislikes sortStrategy,
+                                                                    HttpServletRequest request) {
+        return eventService.getEventRatingByDislikes(sortStrategy, request);
+    }
+
+    @GetMapping("/users/rating/likes")
+    public List<UserWithLikesShortDto> getInitiatorsRatingByLikes(@RequestParam(defaultValue = "SORT_BY_LIKES_DESC") SortStrategyLikes sortStrategy) {
+        return userService.getInitiatorsRatingByLikes(sortStrategy);
+    }
+
+
+    @GetMapping("/users/rating/dislikes")
+    public List<UserWithDislikesShortDto> getInitiatorsRatingByDislikes(@RequestParam(defaultValue = "SORT_BY_DISLIKES_DESC") SortStrategyDislikes sortStrategy) {
+        return userService.getInitiatorsRatingByDislikes(sortStrategy);
+    }
+
+    @GetMapping("/events/{eventId}/stats")
+    public EventStatsShortDto getEventWithStats(@PathVariable Integer eventId, HttpServletRequest request) {
+        return eventService.getEventWithStats(eventId, request);
+    }
+
+
 }
 
 

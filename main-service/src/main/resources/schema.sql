@@ -4,6 +4,8 @@ drop table if exists events cascade;
 drop table if exists requests cascade;
 drop table if exists compilations cascade;
 drop table if exists compilation_events cascade;
+drop table if exists likes cascade;
+drop table if exists dislikes cascade;
 
 
 CREATE TABLE IF NOT EXISTS users (
@@ -36,6 +38,22 @@ CREATE TABLE IF NOT EXISTS events (
     title VARCHAR(120) NOT NULL,
     FOREIGN KEY (category_id) REFERENCES categories(id),
     FOREIGN KEY (initiator_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS likes (
+    user_id BIGINT,
+    event_id BIGINT,
+    PRIMARY KEY (user_id, event_id),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (event_id) REFERENCES events(id)
+);
+
+CREATE TABLE IF NOT EXISTS dislikes (
+    user_id BIGINT,
+    event_id BIGINT,
+    PRIMARY KEY (user_id, event_id),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (event_id) REFERENCES events(id)
 );
 
 
