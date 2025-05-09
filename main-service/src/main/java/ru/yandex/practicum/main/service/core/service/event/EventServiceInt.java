@@ -35,4 +35,14 @@ public interface EventServiceInt {
                                   HttpServletRequest request);
 
     EventFullDto getEvent(Integer eventId, HttpServletRequest request);
+
+    EventWithLikesShortDto addLike(Integer userId, Integer eventId, HttpServletRequest request);
+
+    EventWithDislikesShortDto addDislike(Integer userId, Integer eventId, HttpServletRequest request);
+
+    List<EventWithLikesShortDto> getEventRatingByLikes(SortStrategyLikes sortStrategy, HttpServletRequest request);
+
+    List<EventWithDislikesShortDto> getEventRatingByDislikes(SortStrategyDislikes sortStrategy, HttpServletRequest request);
+
+    EventStatsShortDto getEventWithStats(Integer eventId, HttpServletRequest request);
 }

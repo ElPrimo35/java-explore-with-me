@@ -7,6 +7,7 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -352,6 +353,100 @@ public class EventService implements EventServiceInt {
         Location location = new Location(event.getLocationLat(), event.getLocationLon());
         return eventMapper.toFullDto(event, categoryDto, userShortDto, location, views);
     }
+
+    @Override
+    @Transactional
+    public EventWithLikesShortDto addLike(Integer userId, Integer eventId, HttpServletRequest request) {
+        userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Event not found"));
+        try {
+            eventRepository.addLike(userId, eventId);
+        } catch (RuntimeException e) {
+            throw new BadRequestException("User with id " + userId + " already liked event with id " + eventId);
+        }
+        EventStatsDto eventStatsDto = eventRepository.getEventWithStats(eventId);
+        return eventMapper.toShortDtoWithLikes(
+                event,
+                categoryMapper.toDto(event.getCategory()),
+                userMapper.toShortDto(event.getInitiator()),
+                getViewStats(event, request.getRequestURI()),
+                Math.toIntExact(eventStatsDto.getLikes())
+        );
+    }
+
+    @Override
+    @Transactional
+    public EventWithDislikesShortDto addDislike(Integer userId, Integer eventId, HttpServletRequest request) {
+        userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Event not found"));
+        try {
+            eventRepository.addDislike(userId, eventId);
+        } catch (RuntimeException e) {
+            throw new BadRequestException("User with id " + userId + " already disliked event with id " + eventId);
+        }
+        EventStatsDto eventStatsDto = eventRepository.getEventWithStats(eventId);
+        return eventMapper.toShortDtoWithDislikes(
+                event,
+                categoryMapper.toDto(event.getCategory()),
+                userMapper.toShortDto(event.getInitiator()),
+                getViewStats(event, request.getRequestURI()),
+                Math.toIntExact(eventStatsDto.getDislikes())
+        );
+    }
+
+    @Override
+    public List<EventWithLikesShortDto> getEventRatingByLikes(SortStrategyLikes sortStrategy, HttpServletRequest request) {
+        List<EventWithLikesFullDto> eventWithLikesFullDtos;
+        if (sortStrategy.equals(SortStrategyLikes.SORT_BY_LIKES_DESC)) {
+            eventWithLikesFullDtos = eventRepository.getEventsSortedByLikesDesc();
+        } else {
+            eventWithLikesFullDtos = eventRepository.getEventsSortedByLikesAsc();
+        }
+        List<EventWithLikesShortDto> eventWithLikesShortDtos = eventWithLikesFullDtos.stream()
+                .map(event -> eventMapper.toShortDtoWithLikes(
+                        event.getEvent(),
+                        categoryMapper.toDto(event.getEvent().getCategory()),
+                        userMapper.toShortDto(event.getEvent().getInitiator()),
+                        getViewStats(event.getEvent(), request.getRequestURI()),
+                        Math.toIntExact(event.getLikes())
+                )).toList();
+        return eventWithLikesShortDtos;
+    }
+
+    @Override
+    public List<EventWithDislikesShortDto> getEventRatingByDislikes(SortStrategyDislikes sortStrategy, HttpServletRequest request) {
+        List<EventWithDislikesFullDto> eventWithDislikesFullDtos;
+        if (sortStrategy.equals(SortStrategyDislikes.SORT_BY_DISLIKES_DESC)) {
+            eventWithDislikesFullDtos = eventRepository.getEventsSortedByDislikesDesc();
+        } else {
+            eventWithDislikesFullDtos = eventRepository.getEventsSortedByDislikesAsc();
+        }
+        List<EventWithDislikesShortDto> eventWithDislikesShortDtos = eventWithDislikesFullDtos.stream()
+                .map(event -> eventMapper.toShortDtoWithDislikes(
+                        event.getEvent(),
+                        categoryMapper.toDto(event.getEvent().getCategory()),
+                        userMapper.toShortDto(event.getEvent().getInitiator()),
+                        getViewStats(event.getEvent(), request.getRequestURI()),
+                        Math.toIntExact(event.getDislikes())
+                )).toList();
+        return eventWithDislikesShortDtos;
+    }
+
+    @Override
+    public EventStatsShortDto getEventWithStats(Integer eventId,HttpServletRequest request) {
+        eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Event not found"));
+        EventStatsDto eventStatsDto = eventRepository.getEventWithStats(eventId);
+        EventStatsShortDto eventStatsShortDto = eventMapper.toStatsShortDto(
+                eventStatsDto.getEvent(),
+                categoryMapper.toDto(eventStatsDto.getEvent().getCategory()),
+                userMapper.toShortDto(eventStatsDto.getEvent().getInitiator()),
+                getViewStats(eventStatsDto.getEvent(), request.getRequestURI()),
+                Math.toIntExact(eventStatsDto.getDislikes()),
+                Math.toIntExact(eventStatsDto.getLikes())
+        );
+        return eventStatsShortDto;
+    }
+
 
     private Long getViewStats(Event event, String uri) {
         Long views = 0L;

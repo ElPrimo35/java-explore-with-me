@@ -18,6 +18,7 @@ public class PrivateController {
     private final EventServiceInt eventService;
     private final RequestServiceInt requestService;
 
+
     @PostMapping("/events")
     @ResponseStatus(HttpStatus.CREATED)
     public EventFullDto createEvent(@RequestBody @Valid EventRequestDto eventRequestDto, @PathVariable Integer userId, HttpServletRequest request) {
@@ -79,5 +80,18 @@ public class PrivateController {
         return requestService.getUserRequests(userId);
     }
 
+
+    @PutMapping("/events/{eventId}/like")
+    public EventWithLikesShortDto addLike(@PathVariable Integer userId,
+                          @PathVariable Integer eventId, HttpServletRequest request) {
+        return eventService.addLike(userId, eventId, request);
+    }
+
+
+    @PutMapping("/events/{eventId}/dislike")
+    public EventWithDislikesShortDto addDislike(@PathVariable Integer userId,
+                          @PathVariable Integer eventId, HttpServletRequest request) {
+        return eventService.addDislike(userId, eventId, request);
+    }
 
 }

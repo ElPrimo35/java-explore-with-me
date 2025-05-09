@@ -5,7 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.main.service.core.repository.user.UserRepository;
-import ru.yandex.practicum.main.service.dto.UserDto;
+import ru.yandex.practicum.main.service.dto.*;
 import ru.yandex.practicum.main.service.exception.ConflictException;
 import ru.yandex.practicum.main.service.mapper.UserMapper;
 
@@ -36,5 +36,38 @@ public class UserService implements UserServiceInt {
     @Override
     public void deleteUser(Integer userId) {
         userRepository.deleteById(userId);
+    }
+
+    @Override
+    public List<UserWithLikesShortDto> getInitiatorsRatingByLikes(SortStrategyLikes sortStrategy) {
+        List<UserWithLikesFullDto> userWithLikesFullDtoList;
+        if (sortStrategy.equals(SortStrategyLikes.SORT_BY_LIKES_DESC)) {
+            userWithLikesFullDtoList = userRepository.getUsersSortedByLikesDesc();
+        } else {
+            userWithLikesFullDtoList = userRepository.getUsersSortedByLikesAsc();
+        }
+
+        List<UserWithLikesShortDto> userWithLikesShortDtoList = userWithLikesFullDtoList.stream()
+                .map(userWithLikesFullDto -> userMapper.toShortDtoWithLikes(
+                        userWithLikesFullDto.getUser(),
+                        userWithLikesFullDto.getLikes()
+                )).toList();
+        return userWithLikesShortDtoList;
+    }
+
+    @Override
+    public List<UserWithDislikesShortDto> getInitiatorsRatingByDislikes(SortStrategyDislikes sortStrategy) {
+        List<UserWithDislikesFullDto> userWithDislikesFullDtoList;
+        if (sortStrategy.equals(SortStrategyDislikes.SORT_BY_DISLIKES_DESC)) {
+            userWithDislikesFullDtoList = userRepository.getUsersSortedByDislikesDesc();
+        } else {
+            userWithDislikesFullDtoList = userRepository.getUsersSortedByDislikesAsc();
+        }
+        List<UserWithDislikesShortDto> userWithDislikesShortDtoList = userWithDislikesFullDtoList.stream()
+                .map(userWithDislikesFullDto -> userMapper.toShortDtoWithDislikes(
+                        userWithDislikesFullDto.getUser(),
+                        userWithDislikesFullDto.getDislikes()
+                )).toList();
+        return userWithDislikesShortDtoList;
     }
 }
